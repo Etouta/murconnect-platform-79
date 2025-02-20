@@ -1,11 +1,120 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ArrowLeft, CreditCard, Upload } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const PaymentWizard = () => {
+  const [step, setStep] = useState(1);
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    cardHolder: "",
+    expiryDate: "",
+    cvv: "",
+  });
+  const { toast } = useToast();
+
+  const handleChange = (key: keyof typeof paymentDetails, value: string) => {
+    setPaymentDetails(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleSubmit = () => {
+    toast({
+      title: "Moyen de paiement mis à jour",
+      description: "Vos informations de paiement ont été enregistrées avec succès.",
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {step === 1 && (
+        <>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="cardHolder">Titulaire de la carte</Label>
+              <Input
+                id="cardHolder"
+                value={paymentDetails.cardHolder}
+                onChange={(e) => handleChange('cardHolder', e.target.value)}
+                placeholder="John Doe"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="cardNumber">Numéro de carte</Label>
+              <Input
+                id="cardNumber"
+                value={paymentDetails.cardNumber}
+                onChange={(e) => handleChange('cardNumber', e.target.value)}
+                placeholder="4242 4242 4242 4242"
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setStep(2)}>Suivant</Button>
+          </div>
+        </>
+      )}
+
+      {step === 2 && (
+        <>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="expiryDate">Date d'expiration</Label>
+              <Input
+                id="expiryDate"
+                value={paymentDetails.expiryDate}
+                onChange={(e) => handleChange('expiryDate', e.target.value)}
+                placeholder="MM/YY"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="cvv">CVV</Label>
+              <Input
+                id="cvv"
+                type="password"
+                maxLength={3}
+                value={paymentDetails.cvv}
+                onChange={(e) => handleChange('cvv', e.target.value)}
+                placeholder="123"
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep(1)}>
+              Retour
+            </Button>
+            <Button onClick={handleSubmit}>Enregistrer</Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -128,6 +237,44 @@ const EditProfile = () => {
               onChange={(e) => handleChange('bio', e.target.value)}
               className="mt-1"
             />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-card-dark p-6 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold mb-4">Moyens de paiement</h2>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  Carte principale
+                </CardTitle>
+                <CardDescription>
+                  Gérez vos informations de paiement
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground">
+                  ●●●● ●●●● ●●●● 4242
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Modifier le moyen de paiement</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Modifier le moyen de paiement</DialogTitle>
+                      <DialogDescription>
+                        Mettez à jour vos informations de paiement en toute sécurité.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <PaymentWizard />
+                  </DialogContent>
+                </Dialog>
+              </CardFooter>
+            </Card>
           </div>
         </div>
 
