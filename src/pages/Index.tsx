@@ -33,10 +33,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const stats = {
   activeProjects: mockProjects.filter(p => p.status === "In Progress").length,
-  totalTeamMembers: [...new Set(mockProjects.flatMap(p => p.team))].length,
+  totalTeamMembers: [...new Set(mockProjects.flatMap(p => p.team.map(t => t.name)))].length,
   upcomingDeadlines: mockProjects.filter(p => new Date(p.dueDate) > new Date()).length,
   totalRevenue: mockProjects.reduce((sum, p) => sum + p.price, 0),
   unreadMessages: mockMessages.filter(m => !m.read).length,
@@ -120,6 +121,7 @@ type LayoutItem = {
 
 const Index = () => {
   const { t } = useLanguage();
+  const { totalUnreadMessages } = useUnreadMessages();
   const [activeWidgets, setActiveWidgets] = useState<LayoutItem[]>([
     { i: 'stats', x: 0, y: 0, w: 12, h: 2 },
     { i: 'messages', x: 0, y: 2, w: 4, h: 4 },
@@ -238,6 +240,16 @@ const Index = () => {
                 </div>
               </Link>
             ))}
+            {totalUnreadMessages > 0 && (
+              <div className="p-4 text-center">
+                <Link
+                  to="/messages"
+                  className="text-sm text-primary hover:text-primary/80"
+                >
+                  Voir tous les messages ({totalUnreadMessages})
+                </Link>
+              </div>
+            )}
           </div>
         );
       case 'timeline':

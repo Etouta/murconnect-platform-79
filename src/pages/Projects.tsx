@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Building, MapPin, Euro, User, Clock, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,11 +6,13 @@ import { mockProjects } from "@/mockData";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 type ProjectStatus = "all" | "in_progress" | "blocked" | "archived";
 
 const Projects = () => {
   const { t } = useLanguage();
+  const { totalUnreadMessages, getUnreadMessagesForStatus } = useUnreadMessages();
   const [currentStatus, setCurrentStatus] = useState<ProjectStatus>("in_progress");
 
   const handleNewProject = () => {
@@ -29,7 +30,6 @@ const Projects = () => {
   };
 
   const filteredProjects = getFilteredProjects(currentStatus);
-  const totalUnreadMessages = mockProjects.reduce((sum, project) => sum + project.unreadMessages, 0);
 
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
@@ -42,14 +42,6 @@ const Projects = () => {
       default:
         return "bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200";
     }
-  };
-
-  const getStatusCount = (status: ProjectStatus) => {
-    return getFilteredProjects(status).length;
-  };
-
-  const getUnreadMessagesCount = (status: ProjectStatus) => {
-    return getFilteredProjects(status).reduce((sum, project) => sum + project.unreadMessages, 0);
   };
 
   return (
@@ -84,17 +76,17 @@ const Projects = () => {
         <TabsList className="grid grid-cols-4 w-full">
           <TabsTrigger value="in_progress" className="relative">
             {t("project.filter.in_progress")}
-            {getUnreadMessagesCount("in_progress") > 0 && (
+            {getUnreadMessagesForStatus("in_progress") > 0 && (
               <Badge variant="destructive" className="absolute -top-2 -right-2">
-                {getUnreadMessagesCount("in_progress")}
+                {getUnreadMessagesForStatus("in_progress")}
               </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="blocked" className="relative">
             {t("project.filter.blocked")}
-            {getUnreadMessagesCount("blocked") > 0 && (
+            {getUnreadMessagesForStatus("blocked") > 0 && (
               <Badge variant="destructive" className="absolute -top-2 -right-2">
-                {getUnreadMessagesCount("blocked")}
+                {getUnreadMessagesForStatus("blocked")}
               </Badge>
             )}
           </TabsTrigger>
@@ -108,9 +100,9 @@ const Projects = () => {
           </TabsTrigger>
           <TabsTrigger value="archived" className="relative">
             {t("project.filter.archived")}
-            {getUnreadMessagesCount("archived") > 0 && (
+            {getUnreadMessagesForStatus("archived") > 0 && (
               <Badge variant="destructive" className="absolute -top-2 -right-2">
-                {getUnreadMessagesCount("archived")}
+                {getUnreadMessagesForStatus("archived")}
               </Badge>
             )}
           </TabsTrigger>

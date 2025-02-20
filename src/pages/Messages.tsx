@@ -1,5 +1,6 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import MessageInput from "@/components/MessageInput";
 import { Search, Mail, MailOpen } from "lucide-react";
 import { useState } from "react";
@@ -40,6 +41,7 @@ const mockMessages = [
 
 const Messages = () => {
   const { t } = useLanguage();
+  const { totalUnreadMessages } = useUnreadMessages();
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
@@ -65,9 +67,9 @@ const Messages = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           {t("messages")}
-          {unreadCount > 0 && (
+          {totalUnreadMessages > 0 && (
             <span className="bg-primary text-white text-sm px-2 py-1 rounded-full">
-              {unreadCount} unread
+              {totalUnreadMessages} non lus
             </span>
           )}
         </h1>
