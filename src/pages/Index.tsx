@@ -1,44 +1,68 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Building, Calendar, User, Users } from "lucide-react";
+import { 
+  Building, 
+  Calendar, 
+  User, 
+  Users, 
+  EuroIcon, 
+  Clock, 
+  MessageSquare,
+  CheckCircle2,
+  AlertCircle,
+  ArrowUpCircle,
+  ArrowDownCircle
+} from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
+import { mockProjects, mockMessages, mockTimeline } from "@/mockData";
 
-const mockProjects = [
-  {
-    id: 1,
-    title: "15 Rue de la Paix",
-    status: "In Progress",
-    client: "Jean Dupont",
-    date: "2024-03-15",
-    team: ["Architect", "Engineer", "Constructor"],
-  },
-  // Add more mock projects
-];
+// Calculer les statistiques
+const stats = {
+  activeProjects: mockProjects.filter(p => p.status === "In Progress").length,
+  totalTeamMembers: [...new Set(mockProjects.flatMap(p => p.team))].length,
+  upcomingDeadlines: mockProjects.filter(p => new Date(p.dueDate) > new Date()).length,
+  totalRevenue: mockProjects.reduce((sum, p) => sum + p.price, 0),
+  unreadMessages: mockMessages.filter(m => !m.read).length,
+  completedProjects: mockTimeline.filter(t => t.status === "completed").length
+};
+
+// Trier les événements par date
+const upcomingEvents = mockTimeline
+  .filter(t => t.status !== "completed")
+  .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+  .slice(0, 5);
+
+// Obtenir les derniers messages non lus
+const latestUnreadMessages = mockMessages
+  .filter(m => !m.read)
+  .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  .slice(0, 3);
 
 const Index = () => {
   const { t } = useLanguage();
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">{t("welcome.back")}</h1>
-          <p className="text-gray-600 mt-1">
-            Here's what's happening with your projects
-          </p>
+          <p className="text-gray-600 mt-1">Voici un aperçu de vos projets et activités</p>
         </div>
         <LanguageSwitcher />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Statistiques principales */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-50 rounded-lg">
               <Building className="w-6 h-6 text-blue-500" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm">Active Projects</p>
-              <p className="text-2xl font-semibold">12</p>
+              <p className="text-gray-600 text-sm">Projets actifs</p>
+              <p className="text-2xl font-semibold">{stats.activeProjects}</p>
             </div>
           </div>
         </div>
@@ -46,11 +70,11 @@ const Index = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-green-50 rounded-lg">
-              <Users className="w-6 h-6 text-green-500" />
+              <EuroIcon className="w-6 h-6 text-green-500" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm">Team Members</p>
-              <p className="text-2xl font-semibold">24</p>
+              <p className="text-gray-600 text-sm">Revenus totaux</p>
+              <p className="text-2xl font-semibold">{stats.totalRevenue.toLocaleString()}€</p>
             </div>
           </div>
         </div>
@@ -58,23 +82,122 @@ const Index = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-purple-50 rounded-lg">
-              <Calendar className="w-6 h-6 text-purple-500" />
+              <Clock className="w-6 h-6 text-purple-500" />
             </div>
             <div>
-              <p className="text-gray-600 text-sm">Upcoming Deadlines</p>
-              <p className="text-2xl font-semibold">8</p>
+              <p className="text-gray-600 text-sm">Échéances à venir</p>
+              <p className="text-2xl font-semibold">{stats.upcomingDeadlines}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-red-50 rounded-lg">
+              <MessageSquare className="w-6 h-6 text-red-500" />
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Messages non lus</p>
+              <p className="text-2xl font-semibold">{stats.unreadMessages}</p>
             </div>
           </div>
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Derniers messages */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Messages récents</h2>
+            <Link to="/messages" className="text-sm text-primary hover:underline">
+              Voir tous les messages
+            </Link>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {latestUnreadMessages.map((message) => (
+              <Link
+                key={message.id}
+                to="/messages"
+                className="p-4 hover:bg-gray-50 block"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-red-50 rounded-full">
+                    <MessageSquare className="w-4 h-4 text-red-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{message.sender}</p>
+                    <p className="text-sm text-gray-600 line-clamp-1">
+                      {message.message}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {format(new Date(message.timestamp), "dd MMM yyyy, HH:mm")}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Agenda et échéances */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Échéances à venir</h2>
+            <Link to="/timeline" className="text-sm text-primary hover:underline">
+              Voir la timeline
+            </Link>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-full ${
+                    event.status === "in-progress" 
+                      ? "bg-blue-50" 
+                      : event.status === "pending"
+                      ? "bg-yellow-50"
+                      : "bg-gray-50"
+                  }`}>
+                    <Clock className={`w-4 h-4 ${
+                      event.status === "in-progress"
+                        ? "text-blue-500"
+                        : event.status === "pending"
+                        ? "text-yellow-500"
+                        : "text-gray-500"
+                    }`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{event.title}</p>
+                    <p className="text-sm text-gray-600">{event.description}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Échéance : {format(new Date(event.dueDate), "dd MMM yyyy")}
+                    </p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs ${
+                    event.status === "in-progress"
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-yellow-100 text-yellow-600"
+                  }`}>
+                    {event.status === "in-progress" ? "En cours" : "En attente"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Projets récents */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold">{t("projects")}</h2>
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Projets récents</h2>
+          <Link to="/projects" className="text-sm text-primary hover:underline">
+            Voir tous les projets
+          </Link>
         </div>
         <div className="divide-y divide-gray-100">
-          {mockProjects.map((project) => (
-            <div key={project.id} className="p-6 hover:bg-gray-50 transition-colors">
+          {mockProjects.slice(0, 3).map((project) => (
+            <div key={project.id} className="p-6 hover:bg-gray-50">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium mb-1">{project.title}</h3>
@@ -83,18 +206,33 @@ const Index = () => {
                       <User className="w-4 h-4" />
                       {project.client}
                     </div>
-                    <div>{project.date}</div>
+                    <div>{project.dueDate}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {project.team.map((member, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
-                    >
-                      {member}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <EuroIcon className="w-4 h-4 text-gray-500" />
+                    <span className="font-medium">{project.price.toLocaleString()}€</span>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    project.status === "In Progress"
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-yellow-100 text-yellow-600"
+                  }`}>
+                    {project.status}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex justify-between mb-1 text-sm">
+                  <span className="text-gray-600">Progression</span>
+                  <span className="font-medium">{project.progress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full"
+                    style={{ width: `${project.progress}%` }}
+                  />
                 </div>
               </div>
             </div>
