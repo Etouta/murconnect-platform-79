@@ -1,3 +1,4 @@
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Building, 
@@ -83,9 +84,18 @@ const availableWidgets = {
   },
 };
 
+// Définir le type pour les éléments de la grille
+type LayoutItem = {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
 const Index = () => {
   const { t } = useLanguage();
-  const [activeWidgets, setActiveWidgets] = useState([
+  const [activeWidgets, setActiveWidgets] = useState<LayoutItem[]>([
     { i: 'stats', x: 0, y: 0, w: 4, h: 1 },
     { i: 'messages', x: 0, y: 1, w: 1, h: 2 },
     { i: 'timeline', x: 1, y: 1, w: 1, h: 2 },
@@ -112,8 +122,6 @@ const Index = () => {
           y: Infinity,
           w: widget.w,
           h: widget.h,
-          minW: widget.minW,
-          minH: widget.minH,
         },
       ]);
     }
