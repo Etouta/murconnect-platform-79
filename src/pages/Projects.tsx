@@ -6,12 +6,13 @@ import { toast } from "@/components/ui/use-toast";
 import { mockProjects } from "@/mockData";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 type ProjectStatus = "all" | "in_progress" | "blocked" | "archived";
 
 const Projects = () => {
   const { t } = useLanguage();
-  const [currentStatus, setCurrentStatus] = useState<ProjectStatus>("all");
+  const [currentStatus, setCurrentStatus] = useState<ProjectStatus>("in_progress");
 
   const handleNewProject = () => {
     toast({
@@ -20,10 +21,15 @@ const Projects = () => {
     });
   };
 
-  const filteredProjects = mockProjects.filter(project => {
-    if (currentStatus === "all") return true;
-    return project.status.toLowerCase().replace(" ", "_") === currentStatus;
-  });
+  const getFilteredProjects = (status: ProjectStatus) => {
+    if (status === "all") return mockProjects;
+    return mockProjects.filter(project => 
+      project.status.toLowerCase().replace(" ", "_") === status
+    );
+  };
+
+  const filteredProjects = getFilteredProjects(currentStatus);
+  const totalUnreadMessages = mockProjects.reduce((sum, project) => sum + project.unreadMessages, 0);
 
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
@@ -38,6 +44,14 @@ const Projects = () => {
     }
   };
 
+  const getStatusCount = (status: ProjectStatus) => {
+    return getFilteredProjects(status).length;
+  };
+
+  const getUnreadMessagesCount = (status: ProjectStatus) => {
+    return getFilteredProjects(status).reduce((sum, project) => sum + project.unreadMessages, 0);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -45,6 +59,11 @@ const Projects = () => {
           <h1 className="text-3xl font-bold mb-2">{t("projects")}</h1>
           <p className="text-muted-foreground">
             {filteredProjects.length} {t("project.count")}
+            {totalUnreadMessages > 0 && (
+              <span className="ml-2 text-primary">
+                ({totalUnreadMessages} {t("unread.messages")})
+              </span>
+            )}
           </p>
         </div>
         <button
@@ -57,23 +76,43 @@ const Projects = () => {
       </div>
 
       <Tabs
-        defaultValue="all"
+        defaultValue="in_progress"
         value={currentStatus}
         onValueChange={(value) => setCurrentStatus(value as ProjectStatus)}
         className="mb-6"
       >
-        <TabsList>
-          <TabsTrigger value="all">
-            {t("project.filter.all")}
-          </TabsTrigger>
-          <TabsTrigger value="in_progress">
+        <TabsList className="grid grid-cols-4 w-full">
+          <TabsTrigger value="in_progress" className="relative">
             {t("project.filter.in_progress")}
+            {getUnreadMessagesCount("in_progress") > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2">
+                {getUnreadMessagesCount("in_progress")}
+              </Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="blocked">
+          <TabsTrigger value="blocked" className="relative">
             {t("project.filter.blocked")}
+            {getUnreadMessagesCount("blocked") > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2">
+                {getUnreadMessagesCount("blocked")}
+              </Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="archived">
+          <TabsTrigger value="all" className="relative">
+            {t("project.filter.all")}
+            {totalUnreadMessages > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2">
+                {totalUnreadMessages}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="archived" className="relative">
             {t("project.filter.archived")}
+            {getUnreadMessagesCount("archived") > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2">
+                {getUnreadMessagesCount("archived")}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
       </Tabs>
