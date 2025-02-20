@@ -36,7 +36,11 @@ const translations = {
     "unread": "Non lus",
     "read": "Lus",
     "online": "En ligne",
-    "busy": "Occupé"
+    "busy": "Occupé",
+    "architect": "Architecte",
+    "engineer": "Ingénieur",
+    "constructor": "Constructeur",
+    "company": "Société",
   },
   en: {
     "welcome.back": "Welcome Back",
@@ -64,7 +68,11 @@ const translations = {
     "unread": "Unread",
     "read": "Read",
     "online": "Online",
-    "busy": "Busy"
+    "busy": "Busy",
+    "architect": "Architect",
+    "engineer": "Engineer",
+    "constructor": "Constructor",
+    "company": "Company",
   },
 };
 

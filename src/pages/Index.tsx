@@ -121,12 +121,12 @@ type LayoutItem = {
 const Index = () => {
   const { t } = useLanguage();
   const [activeWidgets, setActiveWidgets] = useState<LayoutItem[]>([
-    { i: 'stats', x: 0, y: 0, w: 4, h: 1 },
-    { i: 'messages', x: 0, y: 1, w: 1, h: 2 },
-    { i: 'timeline', x: 1, y: 1, w: 1, h: 2 },
-    { i: 'projects', x: 2, y: 1, w: 2, h: 2 },
-    { i: 'actions', x: 0, y: 3, w: 2, h: 2 },
-    { i: 'calendar', x: 2, y: 3, w: 2, h: 2 },
+    { i: 'stats', x: 0, y: 0, w: 12, h: 2 },
+    { i: 'messages', x: 0, y: 2, w: 4, h: 4 },
+    { i: 'timeline', x: 4, y: 2, w: 4, h: 4 },
+    { i: 'projects', x: 8, y: 2, w: 4, h: 4 },
+    { i: 'actions', x: 0, y: 6, w: 6, h: 4 },
+    { i: 'calendar', x: 6, y: 6, w: 6, h: 4 },
   ]);
   const [collapsedWidgets, setCollapsedWidgets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);

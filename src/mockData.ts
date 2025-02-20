@@ -1,4 +1,3 @@
-
 export const mockProjects = [
   {
     id: 1,
@@ -9,7 +8,11 @@ export const mockProjects = [
     client: "Jean Dupont",
     dueDate: "2024-04-15",
     progress: 65,
-    team: ["Architect", "Engineer", "Constructor"],
+    team: [
+      { role: "Architect", name: "Sophie Martin", company: "Atelier Architecture" },
+      { role: "Engineer", name: "Pierre Dubois", company: "Bureau d'études TEP" },
+      { role: "Constructor", name: "Marc Laurent", company: "Construction Pro" }
+    ],
     description: "Load-bearing wall modification for open space concept",
     unreadMessages: 2,
   },
@@ -22,7 +25,10 @@ export const mockProjects = [
     client: "Marie Martin",
     dueDate: "2024-05-01",
     progress: 30,
-    team: ["Architect", "Engineer"],
+    team: [
+      { role: "Architect", name: "Thomas Bernard", company: "Studio Architectes" },
+      { role: "Engineer", name: "Claire Lefebvre", company: "Ingénierie Plus" }
+    ],
     description: "Structural reinforcement for wall removal",
     unreadMessages: 1,
   },

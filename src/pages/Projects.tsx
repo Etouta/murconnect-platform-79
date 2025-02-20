@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Building, MapPin, Euro, User, Clock, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,7 +13,11 @@ const mockProjects = [
     client: "Jean Dupont",
     dueDate: "2024-04-15",
     progress: 65,
-    team: ["Architect", "Engineer", "Constructor"],
+    team: [
+      { role: "Architect", name: "John Doe", company: "ABC Corp" },
+      { role: "Engineer", name: "Jane Smith", company: "XYZ Inc" },
+      { role: "Constructor", name: "Emily Johnson", company: "DEF Ltd" },
+    ],
     description: "Load-bearing wall modification for open space concept",
     unreadMessages: 2,
   },
@@ -27,7 +30,10 @@ const mockProjects = [
     client: "Marie Martin",
     dueDate: "2024-05-01",
     progress: 30,
-    team: ["Architect", "Engineer"],
+    team: [
+      { role: "Architect", name: "Michael Brown", company: "GHI Ltd" },
+      { role: "Engineer", name: "Sarah Davis", company: "JKL Corp" },
+    ],
     description: "Structural reinforcement for wall removal",
     unreadMessages: 1,
   },
@@ -116,13 +122,16 @@ const Projects = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 mt-4">
-                {project.team.map((role, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
-                  >
-                    {role}
-                  </span>
+                {project.team.map((member, index) => (
+                  <div key={index} className="space-y-1">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                      {t(member.role.toLowerCase())}
+                    </span>
+                    <div className="text-sm text-gray-600 px-3">
+                      <div>{member.name}</div>
+                      <div className="text-xs text-gray-500">{member.company}</div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
