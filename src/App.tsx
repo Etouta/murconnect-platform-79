@@ -13,12 +13,13 @@ import Messages from "./pages/Messages";
 import Documents from "./pages/Documents";
 import Timeline from "./pages/Timeline";
 import Settings from "./pages/Settings";
+import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen flex bg-muted">
+  <div className="min-h-screen flex bg-muted dark:bg-muted-dark">
     <Sidebar />
     <main className="flex-1 ml-64 p-8 animate-fade-in">{children}</main>
   </div>
@@ -85,6 +86,14 @@ const App = () => (
               element={
                 <AppLayout>
                   <Settings />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <AppLayout>
+                  <EditProfile />
                 </AppLayout>
               }
             />

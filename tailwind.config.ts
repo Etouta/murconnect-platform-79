@@ -25,27 +25,32 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: "#FF6B00",
-        "primary-hover": "#FF8533",
+        primary: {
+          DEFAULT: "#FF6B00",
+          hover: "#FF8533",
+        },
         secondary: {
           DEFAULT: "#9F9EA1",
           foreground: "#FFFFFF",
+        },
+        muted: {
+          DEFAULT: "#F6F6F7",
+          foreground: "#666666",
+          dark: "#222222",
+        },
+        accent: {
+          DEFAULT: "#F6F6F7",
+          foreground: "#333333",
+          dark: "#1A1F2C",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        muted: {
-          DEFAULT: "#F6F6F7",
-          foreground: "#666666",
-        },
-        accent: {
-          DEFAULT: "#F6F6F7",
-          foreground: "#333333",
-        },
         card: {
           DEFAULT: "#FFFFFF",
           foreground: "#333333",
+          dark: "#403E43",
         },
       },
       keyframes: {

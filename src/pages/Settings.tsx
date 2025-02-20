@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import { 
@@ -36,10 +35,12 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const { t, language, setLanguage } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     // Profile settings
     username: "JohnDoe",
@@ -124,48 +125,23 @@ const Settings = () => {
 
       <div className="space-y-6">
         {/* Profil */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
-            <User className="w-5 h-5" />
-            Profil
-          </h2>
+        <div className="bg-white dark:bg-card-dark p-6 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Profil
+            </h2>
+            <Button onClick={() => navigate("/edit-profile")}>
+              Modifier le profil
+            </Button>
+          </div>
           <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="fullName">Nom complet</Label>
-              <Input
-                id="fullName"
-                value={settings.fullName}
-                onChange={(e) => handleSettingChange('fullName', e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={settings.email}
-                onChange={(e) => handleSettingChange('email', e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Input
-                id="bio"
-                value={settings.bio}
-                onChange={(e) => handleSettingChange('bio', e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="profilePicture">Photo de profil</Label>
-              <Input
-                id="profilePicture"
-                type="file"
-                accept="image/*"
-                onChange={handleProfilePictureUpload}
-              />
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+              <div>
+                <h3 className="font-semibold">{settings.fullName}</h3>
+                <p className="text-sm text-muted-foreground">{settings.email}</p>
+              </div>
             </div>
           </div>
         </div>
