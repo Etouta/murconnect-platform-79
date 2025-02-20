@@ -12,7 +12,16 @@ import {
   Shield,
   Smartphone,
   Clock,
-  Euro
+  Euro,
+  User,
+  Lock,
+  Trash2,
+  UserCog,
+  Eye,
+  AlertTriangle,
+  Download,
+  Upload,
+  Palette
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -24,50 +33,141 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { t, language, setLanguage } = useLanguage();
+  const { toast } = useToast();
   const [settings, setSettings] = useState({
+    // Profile settings
+    username: "JohnDoe",
+    email: "john@example.com",
+    fullName: "John Doe",
+    bio: "Architecte passionné",
+    profileVisibility: "public",
+    newsletter: true,
+    twoFactorAuth: false,
+
+    // Notifications
     emailNotifications: true,
     pushNotifications: true,
     smsNotifications: false,
-    darkMode: false,
     messageNotifications: true,
     calendarNotifications: true,
+    marketingNotifications: false,
+    eventReminders: true,
+
+    // Appearance
+    darkMode: false,
+    fontSize: "medium",
+    colorTheme: "blue",
+
+    // Privacy & Security
+    profilePrivacy: "public",
+    showEmail: true,
+    showPhone: false,
+    activityStatus: true,
+
+    // Regional
     currency: "EUR",
     timezone: "Europe/Paris",
+    dateFormat: "DD/MM/YYYY",
+    measurementUnit: "metric"
   });
 
-  const handleSettingChange = (key: keyof typeof settings, value: boolean | string) => {
+  const handleSettingChange = (key: keyof typeof settings, value: any) => {
     setSettings(prev => ({
       ...prev,
       [key]: value
     }));
+    
+    // Notification de mise à jour
+    toast({
+      title: "Paramètre mis à jour",
+      description: "Les modifications ont été enregistrées avec succès.",
+    });
+  };
+
+  const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Simuler un upload
+      toast({
+        title: "Photo de profil mise à jour",
+        description: "Votre photo de profil a été mise à jour avec succès.",
+      });
+    }
+  };
+
+  const handleExportData = () => {
+    // Simuler l'export des données
+    toast({
+      title: "Export des données",
+      description: "Vos données ont été exportées avec succès.",
+    });
+  };
+
+  const handleDeleteAccount = () => {
+    // Simuler la suppression du compte
+    toast({
+      title: "Suppression du compte",
+      description: "Cette action est irréversible. Contactez le support pour plus d'informations.",
+      variant: "destructive",
+    });
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-12">
       <h1 className="text-3xl font-bold mb-6">{t("settings")}</h1>
 
       <div className="space-y-6">
-        {/* Langue */}
+        {/* Profil */}
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
-            <Globe className="w-5 h-5" />
-            Langue
+            <User className="w-5 h-5" />
+            Profil
           </h2>
-          <Select
-            value={language}
-            onValueChange={(value: "fr" | "en") => setLanguage(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sélectionner la langue" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="space-y-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="fullName">Nom complet</Label>
+              <Input
+                id="fullName"
+                value={settings.fullName}
+                onChange={(e) => handleSettingChange('fullName', e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={settings.email}
+                onChange={(e) => handleSettingChange('email', e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Input
+                id="bio"
+                value={settings.bio}
+                onChange={(e) => handleSettingChange('bio', e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="profilePicture">Photo de profil</Label>
+              <Input
+                id="profilePicture"
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePictureUpload}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Notifications */}
@@ -124,6 +224,68 @@ const Settings = () => {
                 onCheckedChange={(checked) => handleSettingChange('calendarNotifications', checked)}
               />
             </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="newsletter">Newsletter</Label>
+              </div>
+              <Switch
+                id="newsletter"
+                checked={settings.newsletter}
+                onCheckedChange={(checked) => handleSettingChange('newsletter', checked)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Sécurité */}
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+            <Shield className="w-5 h-5" />
+            Sécurité
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="2fa">Double authentification</Label>
+              </div>
+              <Switch
+                id="2fa"
+                checked={settings.twoFactorAuth}
+                onCheckedChange={(checked) => handleSettingChange('twoFactorAuth', checked)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Vie privée */}
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+            <Eye className="w-5 h-5" />
+            Confidentialité
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <UserCog className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="profile-visibility">Visibilité du profil</Label>
+              </div>
+              <Select
+                value={settings.profilePrivacy}
+                onValueChange={(value) => handleSettingChange('profilePrivacy', value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Choisir la visibilité" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="public">Public</SelectItem>
+                  <SelectItem value="private">Privé</SelectItem>
+                  <SelectItem value="contacts">Contacts uniquement</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -133,16 +295,38 @@ const Settings = () => {
             <Monitor className="w-5 h-5" />
             Apparence
           </h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Moon className="w-4 h-4 text-gray-500" />
-              <Label htmlFor="dark-mode">Mode sombre</Label>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Moon className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="dark-mode">Mode sombre</Label>
+              </div>
+              <Switch
+                id="dark-mode"
+                checked={settings.darkMode}
+                onCheckedChange={(checked) => handleSettingChange('darkMode', checked)}
+              />
             </div>
-            <Switch
-              id="dark-mode"
-              checked={settings.darkMode}
-              onCheckedChange={(checked) => handleSettingChange('darkMode', checked)}
-            />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Palette className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="theme">Thème</Label>
+              </div>
+              <Select
+                value={settings.colorTheme}
+                onValueChange={(value) => handleSettingChange('colorTheme', value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Choisir le thème" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="blue">Bleu</SelectItem>
+                  <SelectItem value="green">Vert</SelectItem>
+                  <SelectItem value="purple">Violet</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -153,6 +337,25 @@ const Settings = () => {
             Préférences régionales
           </h2>
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="language">Langue</Label>
+              </div>
+              <Select
+                value={language}
+                onValueChange={(value: "fr" | "en") => setLanguage(value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sélectionner la langue" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fr">Français</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Euro className="w-4 h-4 text-gray-500" />
@@ -191,6 +394,35 @@ const Settings = () => {
                   <SelectItem value="America/New_York">New York (UTC-5)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Gestion du compte */}
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+            <AlertTriangle className="w-5 h-5" />
+            Gestion du compte
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-gray-500" />
+                <span>Exporter mes données</span>
+              </div>
+              <Button variant="outline" onClick={handleExportData}>
+                Exporter
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trash2 className="w-4 h-4 text-red-500" />
+                <span className="text-red-500">Supprimer mon compte</span>
+              </div>
+              <Button variant="destructive" onClick={handleDeleteAccount}>
+                Supprimer
+              </Button>
             </div>
           </div>
         </div>
