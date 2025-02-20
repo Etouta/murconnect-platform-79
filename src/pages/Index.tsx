@@ -16,7 +16,8 @@ import {
   X,
   ChevronDown,
   Maximize2,
-  Minimize2
+  Minimize2,
+  History,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Link } from "react-router-dom";
@@ -52,6 +53,18 @@ const latestUnreadMessages = mockMessages
   .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   .slice(0, 3);
 
+const mockActions = [
+  { id: 1, user: "Jean Dupont", action: "A modifié le plan", project: "15 Rue de la Paix", timestamp: "2024-03-20T10:30:00" },
+  { id: 2, user: "Marie Martin", action: "A ajouté un commentaire", project: "28 Avenue Victor Hugo", timestamp: "2024-03-20T11:15:00" },
+  { id: 3, user: "Paul Bernard", action: "A mis à jour le statut", project: "42 Boulevard Haussmann", timestamp: "2024-03-20T14:20:00" },
+];
+
+const mockAppointments = [
+  { id: 1, title: "Visite de chantier", date: "2024-03-25", time: "10:00", project: "15 Rue de la Paix" },
+  { id: 2, title: "Réunion client", date: "2024-03-26", time: "14:30", project: "28 Avenue Victor Hugo" },
+  { id: 3, title: "Inspection finale", date: "2024-03-28", time: "09:00", project: "42 Boulevard Haussmann" },
+];
+
 const availableWidgets = {
   stats: {
     title: "Statistiques",
@@ -64,14 +77,14 @@ const availableWidgets = {
     title: "Messages récents",
     minW: 1,
     minH: 2,
-    w: 1,
+    w: 2,
     h: 2,
   },
   timeline: {
     title: "Échéances à venir",
     minW: 1,
     minH: 2,
-    w: 1,
+    w: 2,
     h: 2,
   },
   projects: {
@@ -81,9 +94,22 @@ const availableWidgets = {
     w: 2,
     h: 2,
   },
+  actions: {
+    title: "Historique des actions",
+    minW: 2,
+    minH: 2,
+    w: 2,
+    h: 2,
+  },
+  calendar: {
+    title: "Calendrier des RDV",
+    minW: 2,
+    minH: 2,
+    w: 2,
+    h: 2,
+  },
 };
 
-// Définir le type pour les éléments de la grille
 type LayoutItem = {
   i: string;
   x: number;
@@ -98,7 +124,9 @@ const Index = () => {
     { i: 'stats', x: 0, y: 0, w: 4, h: 1 },
     { i: 'messages', x: 0, y: 1, w: 1, h: 2 },
     { i: 'timeline', x: 1, y: 1, w: 1, h: 2 },
-    { i: 'projects', x: 0, y: 3, w: 2, h: 2 },
+    { i: 'projects', x: 2, y: 1, w: 2, h: 2 },
+    { i: 'actions', x: 0, y: 3, w: 2, h: 2 },
+    { i: 'calendar', x: 2, y: 3, w: 2, h: 2 },
   ]);
   const [collapsedWidgets, setCollapsedWidgets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -298,6 +326,56 @@ const Index = () => {
             ))}
           </div>
         );
+      case 'actions':
+        return (
+          <div className="divide-y divide-gray-100">
+            {mockActions.map((action) => (
+              <div key={action.id} className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-blue-50 rounded-full">
+                    <History className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{action.user}</p>
+                    <p className="text-sm text-gray-600">{action.action}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-gray-500">{action.project}</p>
+                      <span className="text-gray-300">•</span>
+                      <p className="text-xs text-gray-500">
+                        {format(new Date(action.timestamp), "dd MMM yyyy, HH:mm")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div className="divide-y divide-gray-100">
+            {mockAppointments.map((appointment) => (
+              <div key={appointment.id} className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-purple-50 rounded-full">
+                    <Calendar className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{appointment.title}</p>
+                    <p className="text-sm text-gray-600">{appointment.project}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-gray-500">
+                        {format(new Date(appointment.date), "dd MMM yyyy")}
+                      </p>
+                      <span className="text-gray-300">•</span>
+                      <p className="text-xs text-gray-500">{appointment.time}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
       default:
         return null;
     }
@@ -348,14 +426,15 @@ const Index = () => {
       <GridLayout
         className="layout"
         layout={activeWidgets}
-        cols={4}
-        rowHeight={200}
-        width={1200}
+        cols={12}
+        rowHeight={100}
+        width={window.innerWidth - 64}
         margin={[16, 16]}
         onLayoutChange={(layout) => isEditing && setActiveWidgets(layout)}
         isDraggable={isEditing}
         isResizable={isEditing}
         draggableHandle=".widget-header"
+        maxRows={20}
       >
         {activeWidgets.map((widget) => (
           <div
