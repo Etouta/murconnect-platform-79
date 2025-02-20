@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Building, 
@@ -102,6 +101,7 @@ const Index = () => {
     { i: 'projects', x: 0, y: 3, w: 2, h: 2 },
   ]);
   const [collapsedWidgets, setCollapsedWidgets] = useState<string[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
 
   const toggleWidget = (widgetId: string) => {
     if (collapsedWidgets.includes(widgetId)) {
@@ -311,23 +311,36 @@ const Index = () => {
           <p className="text-gray-600 mt-1">Voici un aperçu de vos projets et activités</p>
         </div>
         <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
-              <Plus className="w-4 h-4" />
-              <span>Ajouter un widget</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {Object.entries(availableWidgets).map(([id, widget]) => (
-                <DropdownMenuItem
-                  key={id}
-                  onClick={() => addWidget(id as keyof typeof availableWidgets)}
-                  disabled={activeWidgets.some(w => w.i === id)}
-                >
-                  {widget.title}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
+              isEditing 
+                ? 'bg-primary text-white border-primary hover:bg-primary-hover'
+                : 'bg-white border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span>{isEditing ? 'Terminer l\'édition' : 'Éditer les widgets'}</span>
+          </button>
+          {isEditing && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+                <Plus className="w-4 h-4" />
+                <span>Ajouter un widget</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {Object.entries(availableWidgets).map(([id, widget]) => (
+                  <DropdownMenuItem
+                    key={id}
+                    onClick={() => addWidget(id as keyof typeof availableWidgets)}
+                    disabled={activeWidgets.some(w => w.i === id)}
+                  >
+                    {widget.title}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <LanguageSwitcher />
         </div>
       </div>
@@ -339,38 +352,52 @@ const Index = () => {
         rowHeight={200}
         width={1200}
         margin={[16, 16]}
-        onLayoutChange={(layout) => setActiveWidgets(layout)}
+        onLayoutChange={(layout) => isEditing && setActiveWidgets(layout)}
+        isDraggable={isEditing}
+        isResizable={isEditing}
         draggableHandle=".widget-header"
       >
         {activeWidgets.map((widget) => (
           <div
             key={widget.i}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+            className="group bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow overflow-hidden"
           >
-            <div className="widget-header p-4 border-b border-gray-100 flex items-center justify-between bg-white cursor-move">
-              <h2 className="text-xl font-semibold">
+            <div 
+              className={`widget-header p-4 border-b border-gray-100 flex items-center justify-between bg-white ${
+                isEditing ? 'cursor-move' : ''
+              }`}
+            >
+              <h2 className="text-xl font-semibold text-gray-800">
                 {availableWidgets[widget.i as keyof typeof availableWidgets].title}
               </h2>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => toggleWidget(widget.i)}
-                  className="p-1 hover:bg-gray-100 rounded-lg"
-                >
-                  {collapsedWidgets.includes(widget.i) ? (
-                    <Maximize2 className="w-4 h-4" />
-                  ) : (
-                    <Minimize2 className="w-4 h-4" />
-                  )}
-                </button>
-                <button
-                  onClick={() => removeWidget(widget.i)}
-                  className="p-1 hover:bg-gray-100 rounded-lg text-red-500"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              {isEditing && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleWidget(widget.i)}
+                    className="p-1 hover:bg-gray-100 rounded-lg"
+                  >
+                    {collapsedWidgets.includes(widget.i) ? (
+                      <Maximize2 className="w-4 h-4" />
+                    ) : (
+                      <Minimize2 className="w-4 h-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => removeWidget(widget.i)}
+                    className="p-1 hover:bg-red-100 rounded-lg text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
-            <div className={`p-4 ${collapsedWidgets.includes(widget.i) ? 'hidden' : ''}`}>
+            <div 
+              className={`p-4 transition-all ${
+                collapsedWidgets.includes(widget.i) ? 'hidden' : ''
+              } ${
+                isEditing ? 'opacity-75' : ''
+              }`}
+            >
               {renderWidgetContent(widget.i)}
             </div>
           </div>
