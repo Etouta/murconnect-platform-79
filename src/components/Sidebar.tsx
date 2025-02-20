@@ -8,6 +8,7 @@ import {
   LogOut,
   MessageSquare,
   Settings,
+  FolderKanban,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -17,6 +18,7 @@ const Sidebar = () => {
 
   const links = [
     { icon: Home, label: "dashboard", path: "/" },
+    { icon: FolderKanban, label: "projects", path: "/projects" },
     { icon: MessageSquare, label: "messages", path: "/messages" },
     { icon: FileText, label: "documents", path: "/documents" },
     { icon: Calendar, label: "timeline", path: "/timeline" },

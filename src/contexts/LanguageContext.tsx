@@ -13,24 +13,22 @@ const translations = {
   fr: {
     "welcome.back": "Bienvenue",
     "dashboard": "Tableau de bord",
+    "projects": "Projets",
     "messages": "Messages",
     "documents": "Documents",
     "timeline": "Chronologie",
     "settings": "Paramètres",
-    "logout": "Déconnexion",
-    "projects": "Projets",
-    // Add more translations
+    "logout": "Déconnexion"
   },
   en: {
     "welcome.back": "Welcome back",
     "dashboard": "Dashboard",
+    "projects": "Projects",
     "messages": "Messages",
     "documents": "Documents",
     "timeline": "Timeline",
     "settings": "Settings",
-    "logout": "Logout",
-    "projects": "Projects",
-    // Add more translations
+    "logout": "Logout"
   },
 };
 
