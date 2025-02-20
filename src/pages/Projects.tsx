@@ -1,43 +1,9 @@
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Building, MapPin, Euro, User, Clock, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
-
-const mockProjects = [
-  {
-    id: 1,
-    title: "15 Rue de la Paix",
-    address: "Paris 75002",
-    price: 25000,
-    status: "In Progress",
-    client: "Jean Dupont",
-    dueDate: "2024-04-15",
-    progress: 65,
-    team: [
-      { role: "Architect", name: "John Doe", company: "ABC Corp" },
-      { role: "Engineer", name: "Jane Smith", company: "XYZ Inc" },
-      { role: "Constructor", name: "Emily Johnson", company: "DEF Ltd" },
-    ],
-    description: "Load-bearing wall modification for open space concept",
-    unreadMessages: 2,
-  },
-  {
-    id: 2,
-    title: "28 Avenue Victor Hugo",
-    address: "Lyon 69006",
-    price: 18500,
-    status: "Pending",
-    client: "Marie Martin",
-    dueDate: "2024-05-01",
-    progress: 30,
-    team: [
-      { role: "Architect", name: "Michael Brown", company: "GHI Ltd" },
-      { role: "Engineer", name: "Sarah Davis", company: "JKL Corp" },
-    ],
-    description: "Structural reinforcement for wall removal",
-    unreadMessages: 1,
-  },
-];
+import { mockProjects } from "@/mockData";
 
 const Projects = () => {
   const { t } = useLanguage();
@@ -45,7 +11,7 @@ const Projects = () => {
   const handleNewProject = () => {
     toast({
       title: "Nouveau projet",
-      description: "La création d'un nouveau projet a été initiée",
+      description: t("project.created"),
     });
   };
 
@@ -58,7 +24,7 @@ const Projects = () => {
           className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
         >
           <PlusCircle className="w-5 h-5" />
-          <span>Nouveau projet</span>
+          <span>{t("new.project")}</span>
         </button>
       </div>
 
@@ -91,7 +57,7 @@ const Projects = () => {
                     className="px-3 py-1 bg-red-100 text-red-600 text-sm rounded-full hover:bg-red-200"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {project.unreadMessages} messages non lus
+                    {project.unreadMessages} {t("unread.messages")}
                   </Link>
                 )}
               </div>

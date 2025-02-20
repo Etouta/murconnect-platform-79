@@ -1,4 +1,25 @@
-export const mockProjects = [
+
+interface TeamMember {
+  role: string;
+  name: string;
+  company: string;
+}
+
+interface Project {
+  id: number;
+  title: string;
+  address: string;
+  price: number;
+  status: string;
+  client: string;
+  dueDate: string;
+  progress: number;
+  team: TeamMember[];
+  description: string;
+  unreadMessages: number;
+}
+
+export const mockProjects: Project[] = [
   {
     id: 1,
     title: "15 Rue de la Paix",
@@ -41,7 +62,12 @@ export const mockProjects = [
     client: "Pierre Durand",
     dueDate: "2024-06-30",
     progress: 15,
-    team: ["Architect", "Engineer", "Constructor", "Designer"],
+    team: [
+      { role: "Architect", name: "Antoine Dubois", company: "Dubois Architectes" },
+      { role: "Engineer", name: "Marie Leroy", company: "Leroy Engineering" },
+      { role: "Constructor", name: "Lucas Martin", company: "BTP Solutions" },
+      { role: "Designer", name: "Emma Bernard", company: "Design Plus" }
+    ],
     description: "Complete renovation of historic building facade",
     unreadMessages: 3,
   },
@@ -54,7 +80,11 @@ export const mockProjects = [
     client: "Sophie Bernard",
     dueDate: "2024-07-15",
     progress: 10,
-    team: ["Architect", "Engineer", "Interior Designer"],
+    team: [
+      { role: "Architect", name: "Paul Roux", company: "Architecture Moderne" },
+      { role: "Engineer", name: "Julie Blanc", company: "Expert Engineering" },
+      { role: "Designer", name: "Nicolas Petit", company: "Interior Design Co" }
+    ],
     description: "Modern office space conversion",
     unreadMessages: 0,
   }
