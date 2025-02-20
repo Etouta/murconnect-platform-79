@@ -16,6 +16,7 @@ const mockProjects = [
     progress: 65,
     team: ["Architect", "Engineer", "Constructor"],
     description: "Load-bearing wall modification for open space concept",
+    unreadMessages: 2,
   },
   {
     id: 2,
@@ -28,6 +29,7 @@ const mockProjects = [
     progress: 30,
     team: ["Architect", "Engineer"],
     description: "Structural reinforcement for wall removal",
+    unreadMessages: 1,
   },
 ];
 
@@ -69,13 +71,24 @@ const Projects = () => {
                   <span>{project.address}</span>
                 </div>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm ${
-                project.status === "In Progress" 
-                  ? "bg-blue-100 text-blue-600"
-                  : "bg-yellow-100 text-yellow-600"
-              }`}>
-                {project.status}
-              </span>
+              <div className="flex flex-col items-end gap-2">
+                <span className={`px-3 py-1 rounded-full text-sm ${
+                  project.status === "In Progress" 
+                    ? "bg-blue-100 text-blue-600"
+                    : "bg-yellow-100 text-yellow-600"
+                }`}>
+                  {project.status}
+                </span>
+                {project.unreadMessages > 0 && (
+                  <Link 
+                    to="/messages" 
+                    className="px-3 py-1 bg-red-100 text-red-600 text-sm rounded-full hover:bg-red-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {project.unreadMessages} messages non lus
+                  </Link>
+                )}
+              </div>
             </div>
 
             <div className="space-y-3">
