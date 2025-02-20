@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 
 type Language = "fr" | "en";
@@ -41,6 +40,20 @@ const translations = {
     "engineer": "Ingénieur",
     "constructor": "Constructeur",
     "company": "Société",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "appearance": "Apparence",
+    "dark.mode": "Mode sombre",
+    "email.notifications": "Notifications par email",
+    "push.notifications": "Notifications push",
+    "message.notifications": "Notifications de messages",
+    "calendar.notifications": "Notifications de calendrier",
+    "regional.preferences": "Préférences régionales",
+    "currency": "Devise",
+    "timezone": "Fuseau horaire",
+    "select.language": "Sélectionner la langue",
+    "select.currency": "Sélectionner la devise",
+    "select.timezone": "Sélectionner le fuseau horaire",
   },
   en: {
     "welcome.back": "Welcome Back",
@@ -73,6 +86,20 @@ const translations = {
     "engineer": "Engineer",
     "constructor": "Constructor",
     "company": "Company",
+    "language": "Language",
+    "notifications": "Notifications",
+    "appearance": "Appearance",
+    "dark.mode": "Dark mode",
+    "email.notifications": "Email notifications",
+    "push.notifications": "Push notifications",
+    "message.notifications": "Message notifications",
+    "calendar.notifications": "Calendar notifications",
+    "regional.preferences": "Regional preferences",
+    "currency": "Currency",
+    "timezone": "Timezone",
+    "select.language": "Select language",
+    "select.currency": "Select currency",
+    "select.timezone": "Select timezone",
   },
 };
 
