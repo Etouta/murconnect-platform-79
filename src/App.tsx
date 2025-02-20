@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Sidebar from "./components/Sidebar";
 import Index from "./pages/Index";
+import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import Messages from "./pages/Messages";
 import Documents from "./pages/Documents";
 import Timeline from "./pages/Timeline";
@@ -35,6 +37,22 @@ const App = () => (
               element={
                 <AppLayout>
                   <Index />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <AppLayout>
+                  <Projects />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/projects/:id"
+              element={
+                <AppLayout>
+                  <ProjectDetail />
                 </AppLayout>
               }
             />
