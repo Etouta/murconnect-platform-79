@@ -6,12 +6,22 @@ import {
   Filter,
   Calendar,
   Building,
-  Users,
-  Clock,
+  Pin,
+  Flag,
+  MessageSquare,
   ChevronDown 
 } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/use-toast";
 
 const mockDocuments = [
   {
@@ -25,6 +35,8 @@ const mockDocuments = [
     author: "John Architect",
     stage: "Planning",
     stakeholders: ["Architect", "Engineer"],
+    isPinned: false,
+    isFlagged: false,
   },
   {
     id: 2,
@@ -37,6 +49,8 @@ const mockDocuments = [
     author: "Sarah Engineer",
     stage: "Permitting",
     stakeholders: ["Architect", "Engineer", "City Official"],
+    isPinned: false,
+    isFlagged: false,
   },
   {
     id: 3,
@@ -49,19 +63,49 @@ const mockDocuments = [
     author: "Marc Constructor",
     stage: "Execution",
     stakeholders: ["Constructor", "Project Manager"],
+    isPinned: false,
+    isFlagged: false,
   },
 ];
 
 const Documents = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     project: "",
     stage: "",
     stakeholder: "",
   });
+  const [documents, setDocuments] = useState(mockDocuments);
 
-  const filteredDocuments = mockDocuments.filter(doc => {
+  const handlePin = (docId: number) => {
+    setDocuments(docs => 
+      docs.map(doc => 
+        doc.id === docId ? { ...doc, isPinned: !doc.isPinned } : doc
+      )
+    );
+    toast({
+      description: "Document status updated",
+    });
+  };
+
+  const handleFlag = (docId: number) => {
+    setDocuments(docs => 
+      docs.map(doc => 
+        doc.id === docId ? { ...doc, isFlagged: !doc.isFlagged } : doc
+      )
+    );
+    toast({
+      description: "Document flagged for review",
+    });
+  };
+
+  const handleMessageTo = (projectId: number, recipientRole: string) => {
+    navigate(`/messages?project=${projectId}&role=${encodeURIComponent(recipientRole)}`);
+  };
+
+  const filteredDocuments = documents.filter(doc => {
     const matchesSearch = 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,9 +119,17 @@ const Documents = () => {
     return matchesSearch && matchesProject && matchesStage && matchesStakeholder;
   });
 
-  const uniqueProjects = [...new Set(mockDocuments.map(doc => doc.project))];
-  const uniqueStages = [...new Set(mockDocuments.map(doc => doc.stage))];
-  const uniqueStakeholders = [...new Set(mockDocuments.flatMap(doc => doc.stakeholders))];
+  const groupedDocuments = filteredDocuments.reduce((acc, doc) => {
+    if (!acc[doc.project]) {
+      acc[doc.project] = [];
+    }
+    acc[doc.project].push(doc);
+    return acc;
+  }, {} as Record<string, typeof documents>);
+
+  const uniqueProjects = [...new Set(documents.map(doc => doc.project))];
+  const uniqueStages = [...new Set(documents.map(doc => doc.stage))];
+  const uniqueStakeholders = [...new Set(documents.flatMap(doc => doc.stakeholders))];
 
   return (
     <div>
@@ -130,32 +182,74 @@ const Documents = () => {
           </select>
         </div>
 
-        <div className="space-y-4">
-          {filteredDocuments.map((doc) => (
-            <div 
-              key={doc.id}
-              className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-gray-400" />
-                <div>
-                  <h4 className="font-medium">{doc.title}</h4>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span>{doc.type} • {doc.size}</span>
-                    <span>•</span>
-                    <span>{doc.project}</span>
-                    <span>•</span>
-                    <span>{doc.author}</span>
+        <div className="space-y-8">
+          {Object.entries(groupedDocuments).map(([project, docs]) => (
+            <div key={project} className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-800">{project}</h2>
+              <div className="space-y-4">
+                {docs.map((doc) => (
+                  <div 
+                    key={doc.id}
+                    className={`flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors ${
+                      doc.isPinned ? 'bg-primary/5 border-primary/20' : ''
+                    } ${doc.isFlagged ? 'border-l-4 border-l-yellow-500' : ''}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <h4 className="font-medium">{doc.title}</h4>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <span>{doc.type} • {doc.size}</span>
+                          <span>•</span>
+                          <span>{doc.author}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                        {doc.stage}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {format(new Date(doc.date), "MMM d, yyyy h:mm a")}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handlePin(doc.id)}
+                          className={doc.isPinned ? "text-primary" : ""}
+                        >
+                          <Pin className={`w-4 h-4 ${doc.isPinned ? "fill-primary" : ""}`} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleFlag(doc.id)}
+                          className={doc.isFlagged ? "text-yellow-500" : ""}
+                        >
+                          <Flag className={`w-4 h-4 ${doc.isFlagged ? "fill-yellow-500" : ""}`} />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MessageSquare className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {doc.stakeholders.map((stakeholder) => (
+                              <DropdownMenuItem
+                                key={stakeholder}
+                                onClick={() => handleMessageTo(doc.projectId, stakeholder)}
+                              >
+                                Message {stakeholder}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
-                  {doc.stage}
-                </span>
-                <span className="text-sm text-gray-500">
-                  {format(new Date(doc.date), "MMM d, yyyy h:mm a")}
-                </span>
+                ))}
               </div>
             </div>
           ))}
