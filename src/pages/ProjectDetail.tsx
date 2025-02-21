@@ -1,6 +1,5 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState } from "react"; // Added this import
+import { useState } from "react";
 import { 
   Building, 
   MapPin, 
@@ -81,13 +80,11 @@ const ProjectDetail = () => {
   const { t } = useLanguage();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("timeline");
+  const [selectedRecipient, setSelectedRecipient] = useState("");
 
   const handleContactClick = (role: string) => {
     setActiveTab("messages");
-    if (document.querySelector("textarea")) {
-      (document.querySelector("textarea") as HTMLTextAreaElement).value = `@${role} `;
-      (document.querySelector("textarea") as HTMLTextAreaElement).focus();
-    }
+    setSelectedRecipient(role);
   };
 
   return (
@@ -218,7 +215,7 @@ const ProjectDetail = () => {
                 </div>
               ))}
             </div>
-            <MessageInput />
+            <MessageInput initialRecipient={selectedRecipient} />
           </div>
         </TabsContent>
 

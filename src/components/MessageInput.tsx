@@ -1,6 +1,6 @@
 
 import { Send, Paperclip, Lock, Globe2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -14,10 +14,20 @@ import { Label } from "@/components/ui/label";
 
 const projectTeam = ["Architect", "Engineer", "Constructor"]; // This should come from props in a real app
 
-const MessageInput = () => {
+interface MessageInputProps {
+  initialRecipient?: string;
+}
+
+const MessageInput = ({ initialRecipient }: MessageInputProps) => {
   const [message, setMessage] = useState("");
-  const [recipient, setRecipient] = useState("");
+  const [recipient, setRecipient] = useState(initialRecipient || "");
   const [isPrivate, setIsPrivate] = useState(false);
+
+  useEffect(() => {
+    if (initialRecipient) {
+      setRecipient(initialRecipient);
+    }
+  }, [initialRecipient]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
