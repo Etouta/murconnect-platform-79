@@ -1,6 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Building, MapPin, Euro, User, Clock, PlusCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { mockProjects } from "@/mockData";
 import { useState } from "react";
@@ -14,12 +14,17 @@ const Projects = () => {
   const { t } = useLanguage();
   const { totalUnreadMessages, getUnreadMessagesForStatus } = useUnreadMessages();
   const [currentStatus, setCurrentStatus] = useState<ProjectStatus>("in_progress");
+  const navigate = useNavigate();
 
   const handleNewProject = () => {
     toast({
       title: t("new.project"),
       description: t("project.created"),
     });
+  };
+
+  const handleMemberClick = (projectId: number, member: { role: string; name: string }) => {
+    navigate(`/messages?project=${projectId}&to=${encodeURIComponent(member.name)}&role=${encodeURIComponent(member.role)}`);
   };
 
   const getFilteredProjects = (status: ProjectStatus) => {
@@ -169,9 +174,12 @@ const Projects = () => {
               <div className="flex flex-wrap gap-2 mt-4">
                 {project.team.map((member, index) => (
                   <div key={index} className="space-y-1">
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm rounded-full">
+                    <button
+                      onClick={() => handleMemberClick(project.id, member)}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm rounded-full hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                    >
                       {t(member.role.toLowerCase())}
-                    </span>
+                    </button>
                     <div className="text-sm text-gray-600 dark:text-gray-400 px-3">
                       <div>{member.name}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-500">
