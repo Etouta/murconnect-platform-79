@@ -2,19 +2,30 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import MessageInput from "@/components/MessageInput";
-import { Search, Mail, MailOpen } from "lucide-react";
+import { Search, Mail, MailOpen, Check, CheckAll } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
-import { mockMessages } from "@/mockData";
+import { Button } from "@/components/ui/button";
 
 const Messages = () => {
   const { t } = useLanguage();
-  const { totalUnreadMessages } = useUnreadMessages();
+  const { 
+    messages, 
+    totalUnreadMessages, 
+    markAsRead, 
+    markAllAsRead 
+  } = useUnreadMessages();
+  
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
 
-  const filteredMessages = mockMessages
+  const handleMessageSelect = (messageId: number) => {
+    setSelectedMessage(messageId);
+    markAsRead(messageId);
+  };
+
+  const filteredMessages = messages
     .filter(msg => {
       if (filter === "unread") return !msg.read;
       if (filter === "read") return msg.read;
@@ -27,7 +38,7 @@ const Messages = () => {
     )
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  const selectedMessageData = mockMessages.find(msg => msg.id === selectedMessage);
+  const selectedMessageData = messages.find(msg => msg.id === selectedMessage);
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -40,6 +51,16 @@ const Messages = () => {
             </span>
           )}
         </h1>
+        {totalUnreadMessages > 0 && (
+          <Button 
+            variant="outline"
+            onClick={markAllAsRead}
+            className="flex items-center gap-2"
+          >
+            <CheckAll className="w-4 h-4" />
+            Tout marquer comme lu
+          </Button>
+        )}
       </div>
 
       <div className="flex gap-6 h-full bg-white rounded-xl shadow-sm border border-gray-100">
@@ -50,7 +71,7 @@ const Messages = () => {
               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search conversations..."
+                placeholder="Rechercher dans les conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -78,7 +99,7 @@ const Messages = () => {
             {filteredMessages.map((msg) => (
               <div
                 key={msg.id}
-                onClick={() => setSelectedMessage(msg.id)}
+                onClick={() => handleMessageSelect(msg.id)}
                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
                   selectedMessage === msg.id ? "bg-gray-50" : ""
                 } ${!msg.read ? "bg-blue-50" : ""}`}
@@ -112,11 +133,18 @@ const Messages = () => {
           {selectedMessageData ? (
             <>
               <div className="p-4 border-b border-gray-100">
-                <h2 className="font-semibold">Project: {selectedMessageData.projectName}</h2>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                  <span>From: {selectedMessageData.sender}</span>
-                  <span>•</span>
-                  <span>{format(new Date(selectedMessageData.timestamp), "MMMM d, yyyy h:mm a")}</span>
+                <h2 className="font-semibold">Projet : {selectedMessageData.projectName}</h2>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                    <span>De : {selectedMessageData.sender}</span>
+                    <span>•</span>
+                    <span>{format(new Date(selectedMessageData.timestamp), "MMMM d, yyyy h:mm a")}</span>
+                  </div>
+                  {selectedMessageData.read && (
+                    <span className="flex items-center gap-1 text-sm text-gray-500">
+                      <Check className="w-4 h-4" /> Lu
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto p-4">
@@ -126,7 +154,7 @@ const Messages = () => {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-500">
-              Select a message to view
+              Sélectionnez un message pour le consulter
             </div>
           )}
         </div>

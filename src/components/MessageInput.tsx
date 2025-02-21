@@ -18,7 +18,7 @@ const MessageInput = () => {
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type your message..."
+        placeholder="Tapez votre message..."
         className="flex-1 resize-none rounded-lg border border-gray-200 p-3 h-[100px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
       />
       <div className="flex flex-col gap-2">
