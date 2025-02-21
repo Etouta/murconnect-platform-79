@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Building, 
@@ -79,6 +78,15 @@ const mockProject = {
 const ProjectDetail = () => {
   const { t } = useLanguage();
   const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("timeline");
+
+  const handleContactClick = (role: string) => {
+    setActiveTab("messages");
+    if (document.querySelector("textarea")) {
+      (document.querySelector("textarea") as HTMLTextAreaElement).value = `@${role} `;
+      (document.querySelector("textarea") as HTMLTextAreaElement).focus();
+    }
+  };
 
   return (
     <div>
@@ -125,19 +133,23 @@ const ProjectDetail = () => {
           />
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {mockProject.team.map((role, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
-            >
-              {role}
-            </span>
-          ))}
+        <div className="flex items-center gap-2 mt-4">
+          <span className="text-gray-600">Contacter :</span>
+          <div className="flex flex-wrap gap-2">
+            {mockProject.team.map((role, index) => (
+              <button
+                key={index}
+                onClick={() => handleContactClick(role)}
+                className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+              >
+                {role}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <Tabs defaultValue="timeline" className="w-full">
+      <Tabs defaultValue={activeTab} value={activeTab} className="w-full" onValueChange={setActiveTab}>
         <TabsList className="mb-6">
           <TabsTrigger value="timeline" className="gap-2">
             <Calendar className="w-4 h-4" />
