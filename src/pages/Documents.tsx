@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Search, 
@@ -9,12 +8,14 @@ import {
   Pin,
   Flag,
   MessageSquare,
-  ChevronDown 
+  ChevronDown,
+  Bell,
+  BellOff 
 } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
+import { mockProjects } from "@/mockData";
 
 const mockDocuments = [
   {
@@ -72,6 +74,8 @@ const Documents = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState<"current" | "all">("current");
+  const [projectNotifications, setProjectNotifications] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState({
     project: "",
     stage: "",
@@ -105,6 +109,21 @@ const Documents = () => {
     navigate(`/messages?project=${projectId}&role=${encodeURIComponent(recipientRole)}`);
   };
 
+  const getProjectStatus = (projectName: string) => {
+    const project = mockProjects.find(p => p.title === projectName);
+    return project?.status || "Unknown";
+  };
+
+  const toggleProjectNotifications = (project: string) => {
+    setProjectNotifications(prev => ({
+      ...prev,
+      [project]: !prev[project]
+    }));
+    toast({
+      description: `Notifications ${projectNotifications[project] ? 'disabled' : 'enabled'} for ${project}`,
+    });
+  };
+
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,8 +134,11 @@ const Documents = () => {
     const matchesStage = !filters.stage || doc.stage === filters.stage;
     const matchesStakeholder = !filters.stakeholder || 
       doc.stakeholders.includes(filters.stakeholder);
+    
+    const matchesTab = activeTab === "all" || 
+      (activeTab === "current" && getProjectStatus(doc.project) === "In Progress");
 
-    return matchesSearch && matchesProject && matchesStage && matchesStakeholder;
+    return matchesSearch && matchesProject && matchesStage && matchesStakeholder && matchesTab;
   });
 
   const groupedDocuments = filteredDocuments.reduce((acc, doc) => {
@@ -136,6 +158,23 @@ const Documents = () => {
       <h1 className="text-3xl font-bold mb-6">{t("documents")}</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-4">
+            <Button
+              variant={activeTab === "current" ? "default" : "outline"}
+              onClick={() => setActiveTab("current")}
+            >
+              En cours
+            </Button>
+            <Button
+              variant={activeTab === "all" ? "default" : "outline"}
+              onClick={() => setActiveTab("all")}
+            >
+              Tous les projets
+            </Button>
+          </div>
+        </div>
+
         <div className="flex gap-4 mb-6">
           <div className="flex-1 relative">
             <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -185,7 +224,37 @@ const Documents = () => {
         <div className="space-y-8">
           {Object.entries(groupedDocuments).map(([project, docs]) => (
             <div key={project} className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">{project}</h2>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Link 
+                    to={`/projects/${mockProjects.find(p => p.title === project)?.id}`}
+                    className="text-xl font-semibold text-gray-800 hover:text-primary transition-colors"
+                  >
+                    {project}
+                  </Link>
+                  <span className={`px-3 py-1 text-sm rounded-full ${
+                    getProjectStatus(project) === "In Progress" 
+                      ? "bg-green-100 text-green-600" 
+                      : getProjectStatus(project) === "Blocked"
+                      ? "bg-red-100 text-red-600"
+                      : "bg-gray-100 text-gray-600"
+                  }`}>
+                    {getProjectStatus(project)}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleProjectNotifications(project)}
+                  className={projectNotifications[project] ? "text-primary" : ""}
+                >
+                  {projectNotifications[project] ? (
+                    <Bell className="w-4 h-4" />
+                  ) : (
+                    <BellOff className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
               <div className="space-y-4">
                 {docs.map((doc) => (
                   <div 
