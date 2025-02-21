@@ -2,7 +2,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import MessageInput from "@/components/MessageInput";
-import { Search, Mail, MailOpen, Check, CheckAll } from "lucide-react";
+import { Search, Mail, MailOpen, Check, CheckCheck } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ const Messages = () => {
             onClick={markAllAsRead}
             className="flex items-center gap-2"
           >
-            <CheckAll className="w-4 h-4" />
+            <CheckCheck className="w-4 h-4" />
             Tout marquer comme lu
           </Button>
         )}
