@@ -3,7 +3,7 @@ import { useMessages } from "@/contexts/MessagesContext";
 import { mockProjects } from "@/mockData";
 
 export const useUnreadMessages = () => {
-  const { messages, markAsRead, markAllAsRead, totalUnreadMessages } = useMessages();
+  const { messages, markAsRead, markAllAsRead, togglePin, totalUnreadMessages } = useMessages();
   const unreadMessages = messages.filter(m => !m.read);
 
   const getUnreadMessagesForProject = (projectId: number) => {
@@ -33,5 +33,6 @@ export const useUnreadMessages = () => {
     getLatestUnreadMessages,
     markAsRead,
     markAllAsRead,
+    togglePin,
   };
 };
