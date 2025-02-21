@@ -5,39 +5,7 @@ import MessageInput from "@/components/MessageInput";
 import { Search, Mail, MailOpen } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
-
-const mockMessages = [
-  {
-    id: 1,
-    sender: "John Architect",
-    role: "Architect",
-    projectId: 1,
-    projectName: "15 Rue de la Paix",
-    message: "The wall modification plans have been updated. Please review the latest changes.",
-    timestamp: "2024-03-20T10:30:00",
-    read: false,
-  },
-  {
-    id: 2,
-    sender: "Sarah Engineer",
-    role: "Engineer",
-    projectId: 1,
-    projectName: "15 Rue de la Paix",
-    message: "I've reviewed the structural calculations. We need to reinforce the support beams.",
-    timestamp: "2024-03-20T11:15:00",
-    read: true,
-  },
-  {
-    id: 3,
-    sender: "Marc Constructor",
-    role: "Constructor",
-    projectId: 2,
-    projectName: "28 Avenue Victor Hugo",
-    message: "Team is ready to start on the support beam reinforcement next week.",
-    timestamp: "2024-03-20T14:20:00",
-    read: false,
-  }
-];
+import { mockMessages } from "@/mockData";
 
 const Messages = () => {
   const { t } = useLanguage();
@@ -56,9 +24,8 @@ const Messages = () => {
       msg.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.projectName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-  const unreadCount = mockMessages.filter(msg => !msg.read).length;
+    )
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   const selectedMessageData = mockMessages.find(msg => msg.id === selectedMessage);
 

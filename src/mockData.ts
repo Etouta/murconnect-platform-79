@@ -1,4 +1,3 @@
-
 interface TeamMember {
   role: string;
   name: string;
@@ -30,8 +29,8 @@ export const mockProjects: Project[] = [
     dueDate: "2024-04-15",
     progress: 65,
     team: [
-      { role: "Architect", name: "Sophie Martin", company: "Atelier Architecture" },
-      { role: "Engineer", name: "Pierre Dubois", company: "Bureau d'études TEP" },
+      { role: "Architect", name: "John Architect", company: "Atelier Architecture" },
+      { role: "Engineer", name: "Sarah Engineer", company: "Bureau d'études TEP" },
       { role: "Constructor", name: "Marc Laurent", company: "Construction Pro" }
     ],
     description: "Load-bearing wall modification for open space concept",
@@ -48,7 +47,7 @@ export const mockProjects: Project[] = [
     progress: 30,
     team: [
       { role: "Architect", name: "Thomas Bernard", company: "Studio Architectes" },
-      { role: "Engineer", name: "Claire Lefebvre", company: "Ingénierie Plus" }
+      { role: "Constructor", name: "Marc Constructor", company: "Construction Plus" }
     ],
     description: "Structural reinforcement for wall removal",
     unreadMessages: 1,
@@ -64,9 +63,8 @@ export const mockProjects: Project[] = [
     progress: 15,
     team: [
       { role: "Architect", name: "Antoine Dubois", company: "Dubois Architectes" },
-      { role: "Engineer", name: "Marie Leroy", company: "Leroy Engineering" },
-      { role: "Constructor", name: "Lucas Martin", company: "BTP Solutions" },
-      { role: "Designer", name: "Emma Bernard", company: "Design Plus" }
+      { role: "Engineer", name: "Lucas Engineer", company: "Leroy Engineering" },
+      { role: "Designer", name: "Emilie Designer", company: "Design Plus" }
     ],
     description: "Complete renovation of historic building facade",
     unreadMessages: 3,
@@ -109,7 +107,7 @@ export const mockMessages = [
     projectName: "15 Rue de la Paix",
     message: "I've reviewed the structural calculations. We need to reinforce the support beams.",
     timestamp: "2024-03-20T11:15:00",
-    read: true,
+    read: false,
   },
   {
     id: 3,
@@ -139,6 +137,16 @@ export const mockMessages = [
     projectName: "42 Boulevard Haussmann",
     message: "Structural analysis of the historic facade completed.",
     timestamp: "2024-03-21T11:45:00",
+    read: false,
+  },
+  {
+    id: 6,
+    sender: "Antoine Dubois",
+    role: "Architect",
+    projectId: 3,
+    projectName: "42 Boulevard Haussmann",
+    message: "Historic preservation requirements need immediate attention.",
+    timestamp: "2024-03-21T15:20:00",
     read: false,
   }
 ];
