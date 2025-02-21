@@ -81,7 +81,10 @@ const Documents = () => {
     stage: "",
     stakeholder: "",
   });
-  const [documents, setDocuments] = useState(mockDocuments);
+  const [documents, setDocuments] = useState(mockDocuments.map(doc => ({
+    ...doc,
+    isFlagged: doc.isFlagged === true ? 'green' : 'none'
+  })));
 
   const handlePin = (docId: number) => {
     setDocuments(docs => 
@@ -96,12 +99,18 @@ const Documents = () => {
 
   const handleFlag = (docId: number) => {
     setDocuments(docs => 
-      docs.map(doc => 
-        doc.id === docId ? { ...doc, isFlagged: !doc.isFlagged } : doc
-      )
+      docs.map(doc => {
+        if (doc.id !== docId) return doc;
+        const nextState = {
+          'none': 'green',
+          'green': 'red',
+          'red': 'none'
+        }[doc.isFlagged as string];
+        return { ...doc, isFlagged: nextState };
+      })
     );
     toast({
-      description: "Document flagged for review",
+      description: "Document flag status updated",
     });
   };
 
@@ -261,7 +270,10 @@ const Documents = () => {
                     key={doc.id}
                     className={`flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors ${
                       doc.isPinned ? 'bg-primary/5 border-primary/20' : ''
-                    } ${doc.isFlagged ? 'border-l-4 border-l-yellow-500' : ''}`}
+                    } ${
+                      doc.isFlagged === 'green' ? 'border-l-4 border-l-green-500' :
+                      doc.isFlagged === 'red' ? 'border-l-4 border-l-red-500' : ''
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <FileText className="w-5 h-5 text-gray-400" />
@@ -294,9 +306,15 @@ const Documents = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleFlag(doc.id)}
-                          className={doc.isFlagged ? "text-yellow-500" : ""}
+                          className={
+                            doc.isFlagged === 'green' ? "text-green-500" :
+                            doc.isFlagged === 'red' ? "text-red-500" : ""
+                          }
                         >
-                          <Flag className={`w-4 h-4 ${doc.isFlagged ? "fill-yellow-500" : ""}`} />
+                          <Flag className={`w-4 h-4 ${
+                            doc.isFlagged === 'green' ? "fill-green-500" :
+                            doc.isFlagged === 'red' ? "fill-red-500" : ""
+                          }`} />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
