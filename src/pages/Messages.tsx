@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import MessageInput from "@/components/MessageInput";
@@ -149,7 +148,12 @@ const Messages = () => {
             <>
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="font-semibold">Projet : {selectedMessageData.projectName}</h2>
+                  <Link 
+                    to={`/projects/${selectedMessageData.projectId}`}
+                    className="hover:text-primary transition-colors"
+                  >
+                    <h2 className="font-semibold">Projet : {selectedMessageData.projectName}</h2>
+                  </Link>
                   <Button
                     variant="ghost"
                     size="icon"
