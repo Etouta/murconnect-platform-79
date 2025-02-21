@@ -2,10 +2,11 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import MessageInput from "@/components/MessageInput";
-import { Search, Mail, MailOpen, Check, CheckCheck } from "lucide-react";
+import { Search, Mail, MailOpen, Check, CheckCheck, Pin, FileText } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Messages = () => {
   const { t } = useLanguage();
@@ -13,7 +14,8 @@ const Messages = () => {
     messages, 
     totalUnreadMessages, 
     markAsRead, 
-    markAllAsRead 
+    markAllAsRead,
+    togglePin 
   } = useUnreadMessages();
   
   const [filter, setFilter] = useState("all");
@@ -29,6 +31,7 @@ const Messages = () => {
     .filter(msg => {
       if (filter === "unread") return !msg.read;
       if (filter === "read") return msg.read;
+      if (filter === "pinned") return msg.isPinned;
       return true;
     })
     .filter(msg => 
@@ -36,7 +39,11 @@ const Messages = () => {
       msg.sender.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.projectName.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    .sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
 
   const selectedMessageData = messages.find(msg => msg.id === selectedMessage);
 
@@ -80,7 +87,7 @@ const Messages = () => {
           </div>
           <div className="p-2 border-b border-gray-100">
             <div className="flex gap-2">
-              {["all", "unread", "read"].map((type) => (
+              {["all", "unread", "read", "pinned"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilter(type)}
@@ -116,9 +123,17 @@ const Messages = () => {
                       <p className="text-sm text-gray-500">{msg.projectName}</p>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {format(new Date(msg.timestamp), "MMM d, h:mm a")}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {msg.attachments && msg.attachments.length > 0 && (
+                      <FileText className="w-4 h-4 text-gray-400" />
+                    )}
+                    {msg.isPinned && (
+                      <Pin className="w-4 h-4 text-primary fill-primary" />
+                    )}
+                    <span className="text-xs text-gray-400">
+                      {format(new Date(msg.timestamp), "MMM d, h:mm a")}
+                    </span>
+                  </div>
                 </div>
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                   {msg.message}
@@ -133,7 +148,17 @@ const Messages = () => {
           {selectedMessageData ? (
             <>
               <div className="p-4 border-b border-gray-100">
-                <h2 className="font-semibold">Projet : {selectedMessageData.projectName}</h2>
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="font-semibold">Projet : {selectedMessageData.projectName}</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => togglePin(selectedMessageData.id)}
+                    className={selectedMessageData.isPinned ? "text-primary" : ""}
+                  >
+                    <Pin className={`w-4 h-4 ${selectedMessageData.isPinned ? "fill-primary" : ""}`} />
+                  </Button>
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <span>De : {selectedMessageData.sender}</span>
@@ -149,6 +174,17 @@ const Messages = () => {
               </div>
               <div className="flex-1 overflow-y-auto p-4">
                 <p className="text-gray-600">{selectedMessageData.message}</p>
+                {selectedMessageData.attachments && selectedMessageData.attachments.length > 0 && (
+                  <div className="mt-4">
+                    <Link
+                      to={`/messages/${selectedMessageData.id}/documents`}
+                      className="flex items-center gap-2 text-primary hover:underline"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Voir tous les documents ({selectedMessageData.attachments.length})
+                    </Link>
+                  </div>
+                )}
               </div>
               <MessageInput />
             </>

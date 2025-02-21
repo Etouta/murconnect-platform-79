@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProjectDetail from "./pages/ProjectDetail";
 import EditProfile from "./pages/EditProfile";
+import MessageDocuments from "./pages/MessageDocuments";
 
 const Routes = () => {
   return (
@@ -16,6 +17,7 @@ const Routes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/projects" element={<Projects />} />
       <Route path="/messages" element={<Messages />} />
+      <Route path="/messages/:messageId/documents" element={<MessageDocuments />} />
       <Route path="/documents" element={<Documents />} />
       <Route path="/timeline" element={<Timeline />} />
       <Route path="/settings" element={<Settings />} />

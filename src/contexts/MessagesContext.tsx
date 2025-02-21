@@ -11,19 +11,31 @@ type Message = {
   message: string;
   timestamp: string;
   read: boolean;
+  isPinned?: boolean;
+  attachments?: {
+    id: number;
+    name: string;
+    type: string;
+    url: string;
+  }[];
 };
 
 type MessagesContextType = {
   messages: Message[];
   markAsRead: (messageId: number) => void;
   markAllAsRead: () => void;
+  togglePin: (messageId: number) => void;
   totalUnreadMessages: number;
 };
 
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
 
 export const MessagesProvider = ({ children }: { children: React.ReactNode }) => {
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState(mockMessages.map(msg => ({
+    ...msg,
+    isPinned: false,
+    attachments: []
+  })));
 
   const markAsRead = useCallback((messageId: number) => {
     setMessages(prevMessages =>
@@ -39,6 +51,14 @@ export const MessagesProvider = ({ children }: { children: React.ReactNode }) =>
     );
   }, []);
 
+  const togglePin = useCallback((messageId: number) => {
+    setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === messageId ? { ...msg, isPinned: !msg.isPinned } : msg
+      )
+    );
+  }, []);
+
   const totalUnreadMessages = messages.filter(m => !m.read).length;
 
   return (
@@ -46,6 +66,7 @@ export const MessagesProvider = ({ children }: { children: React.ReactNode }) =>
       messages,
       markAsRead,
       markAllAsRead,
+      togglePin,
       totalUnreadMessages,
     }}>
       {children}
