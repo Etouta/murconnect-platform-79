@@ -10,20 +10,20 @@ import {
   Settings,
   FolderKanban,
   Circle,
-  PlusCircle,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const Sidebar = () => {
   const { t } = useLanguage();
   const location = useLocation();
-  const unreadMessages = 3; // Simulated unread messages count
+  const { totalUnreadMessages } = useUnreadMessages();
 
   const links = [
     { icon: Home, label: "dashboard", path: "/" },
     { icon: FolderKanban, label: "projects", path: "/projects" },
-    { icon: MessageSquare, label: "messages", path: "/messages", badge: unreadMessages },
+    { icon: MessageSquare, label: "messages", path: "/messages", badge: totalUnreadMessages },
     { icon: FileText, label: "documents", path: "/documents" },
     { icon: Calendar, label: "timeline", path: "/timeline" },
     { icon: Settings, label: "settings", path: "/settings" },
